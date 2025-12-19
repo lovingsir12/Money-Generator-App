@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Money Flow Dashboard - Track Your Finances</title>
+  <meta name="description" content="Personal finance dashboard to track income, expenses, and savings goals">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="logo">
+        <span class="logo-icon">💰</span>
+        <span class="logo-text">Money Flow</span>
+      </div>
+      <nav class="nav">
+        <a href="#" class="nav-item active" data-view="dashboard">
+          <span class="nav-icon">📊</span>
+          Dashboard
+        </a>
+        <a href="#" class="nav-item" data-view="transactions">
+          <span class="nav-icon">💳</span>
+          Transactions
+        </a>
+        <a href="#" class="nav-item" data-view="goals">
+          <span class="nav-icon">🎯</span>
+          Goals
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="quick-add-btn" id="quickAddBtn">
+          <span>+ Add Transaction</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Dashboard View -->
+      <section id="dashboardView" class="view active">
+        <header class="view-header">
+          <div>
+            <h1>Dashboard</h1>
+            <p class="subtitle" id="currentDate"></p>
+          </div>
+        </header>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+          <div class="stat-card income">
+            <div class="stat-icon">📈</div>
+            <div class="stat-info">
+              <span class="stat-label">Monthly Income</span>
+              <span class="stat-value" id="monthlyIncome">$0</span>
+            </div>
+          </div>
+          <div class="stat-card expense">
+            <div class="stat-icon">📉</div>
+            <div class="stat-info">
+              <span class="stat-label">Monthly Expenses</span>
+              <span class="stat-value" id="monthlyExpense">$0</span>
+            </div>
+          </div>
+          <div class="stat-card balance">
+            <div class="stat-icon">💎</div>
+            <div class="stat-info">
+              <span class="stat-label">Monthly Balance</span>
+              <span class="stat-value" id="monthlyBalance">$0</span>
+            </div>
+          </div>
+          <div class="stat-card total">
+            <div class="stat-icon">🏦</div>
+            <div class="stat-info">
+              <span class="stat-label">All-Time Balance</span>
+              <span class="stat-value" id="allTimeBalance">$0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="charts-grid">
+          <div class="chart-card">
+            <h3>Monthly Trend</h3>
+            <div class="chart-container">
+              <canvas id="trendChart"></canvas>
+            </div>
+          </div>
+          <div class="chart-card">
+            <h3>Expense Breakdown</h3>
+            <div class="chart-container">
+              <canvas id="categoryChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Transactions -->
+        <div class="recent-section">
+          <div class="section-header">
+            <h3>Recent Transactions</h3>
+            <a href="#" class="view-all" data-view="transactions">View All →</a>
+          </div>
+          <div class="transactions-list" id="recentTransactions">
+            <!-- Transactions will be loaded here -->
+          </div>
+        </div>
+
+        <!-- Goals Preview -->
+        <div class="goals-section">
+          <div class="section-header">
+            <h3>Savings Goals</h3>
+            <a href="#" class="view-all" data-view="goals">View All →</a>
+          </div>
+          <div class="goals-grid" id="goalsPreview">
+            <!-- Goals will be loaded here -->
+          </div>
+        </div>
+      </section>
+
+      <!-- Transactions View -->
+      <section id="transactionsView" class="view">
+        <header class="view-header">
+          <div>
+            <h1>Transactions</h1>
+            <p class="subtitle">Manage your income and expenses</p>
+          </div>
+          <div class="header-actions">
+            <select id="transactionFilter" class="filter-select">
+              <option value="">All Transactions</option>
+              <option value="income">Income Only</option>
+              <option value="expense">Expenses Only</option>
+            </select>
+            <button class="btn btn-primary" id="addTransactionBtn">+ Add Transaction</button>
+          </div>
+        </header>
+        <div class="transactions-list full" id="allTransactions">
+          <!-- All transactions will be loaded here -->
+        </div>
+      </section>
+
+      <!-- Goals View -->
+      <section id="goalsView" class="view">
+        <header class="view-header">
+          <div>
+            <h1>Savings Goals</h1>
+            <p class="subtitle">Track your financial objectives</p>
+          </div>
+          <button class="btn btn-primary" id="addGoalBtn">+ Add Goal</button>
+        </header>
+        <div class="goals-grid full" id="allGoals">
+          <!-- All goals will be loaded here -->
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Transaction Modal -->
+  <div class="modal" id="transactionModal">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Add Transaction</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <form id="transactionForm">
+        <div class="form-group">
+          <label>Type</label>
+          <div class="toggle-group">
+            <label class="toggle-option">
+              <input type="radio" name="type" value="income" checked>
+              <span class="toggle-label income">💰 Income</span>
+            </label>
+            <label class="toggle-option">
+              <input type="radio" name="type" value="expense">
+              <span class="toggle-label expense">💸 Expense</span>
+            </label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="category">Category</label>
+          <select id="category" name="category" required>
+            <!-- Categories will be loaded dynamically -->
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="amount">Amount ($)</label>
+          <input type="number" id="amount" name="amount" step="0.01" min="0.01" required placeholder="0.00">
+        </div>
+        <div class="form-group">
+          <label for="description">Description (optional)</label>
+          <input type="text" id="description" name="description" placeholder="What was this for?">
+        </div>
+        <div class="form-group">
+          <label for="date">Date</label>
+          <input type="date" id="date" name="date" required>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary modal-cancel">Cancel</button>
+          <button type="submit" class="btn btn-primary">Add Transaction</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Goal Modal -->
+  <div class="modal" id="goalModal">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Add Savings Goal</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <form id="goalForm">
+        <div class="form-group">
+          <label for="goalName">Goal Name</label>
+          <input type="text" id="goalName" name="name" required placeholder="e.g., Emergency Fund">
+        </div>
+        <div class="form-group">
+          <label for="targetAmount">Target Amount ($)</label>
+          <input type="number" id="targetAmount" name="target_amount" step="0.01" min="1" required placeholder="0.00">
+        </div>
+        <div class="form-group">
+          <label for="currentAmount">Current Saved ($)</label>
+          <input type="number" id="currentAmount" name="current_amount" step="0.01" min="0" value="0" placeholder="0.00">
+        </div>
+        <div class="form-group">
+          <label for="deadline">Target Date (optional)</label>
+          <input type="date" id="deadline" name="deadline">
+        </div>
+        <div class="form-group">
+          <label for="goalColor">Color</label>
+          <input type="color" id="goalColor" name="color" value="#6366f1">
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary modal-cancel">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Goal</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Update Goal Modal -->
+  <div class="modal" id="updateGoalModal">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Update Progress</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <form id="updateGoalForm">
+        <input type="hidden" id="updateGoalId">
+        <div class="form-group">
+          <label for="updateCurrentAmount">Current Saved ($)</label>
+          <input type="number" id="updateCurrentAmount" name="current_amount" step="0.01" min="0" required>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary modal-cancel">Cancel</button>
+          <button type="submit" class="btn btn-primary">Update</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
